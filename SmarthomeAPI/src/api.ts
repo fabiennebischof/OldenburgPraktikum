@@ -5,7 +5,7 @@ const PASSWORD = "csd";
 const TOKEN = "zuuQtRg4a2n2SDoY2Ad3Gnbv0BSSNsH0";
 
 export const api = axios.create({
-    baseURL: "http://192.168.137.26/api/v1",
+    baseURL: "/api/v1",
     auth: {
         username: USERNAME,
         password: PASSWORD
