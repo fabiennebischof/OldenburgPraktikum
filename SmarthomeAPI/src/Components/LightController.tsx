@@ -17,6 +17,7 @@ function LightController() {
         }
     };
 
+    //get config
     const handleGet = async () => {
         try {
             const res = await api.get("/uiconfig");
@@ -26,7 +27,7 @@ function LightController() {
         }
     };
 
-    //Flur
+    //light 1 on/off toggle
     const [checked, setChecked] = useState(false);
     const handleLight1 = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = e.target.checked;
