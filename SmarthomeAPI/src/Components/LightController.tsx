@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { api } from "../api";
 import './LightController.css';
 
@@ -7,7 +8,7 @@ function LightController() {
     const handlePutEverythingOut = async () => {
         try {
             const res = await api.put("/values/a02k", {
-                
+
                 value: 0
             });
             console.log(res.data);
@@ -26,29 +27,17 @@ function LightController() {
     };
 
     //Flur
-    const handleLight1 = async () => {
+    const [checked, setChecked] = useState(false);
+    const handleLight1 = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setChecked(isChecked);
+
         try {
-
-            const ourCheckbox = document.querySelector("#switch");
-
-            if(!document.getElementById("switch") == null) 
-            {
-
-                if(true)
-                {
-                    const res = await api.put("/values/a001", 
-                    {
-                    value: 0
-                    });
-                    console.log(res.data);
-                
-                    return;
-                }
-                
-            }
-        } 
-        catch (err) 
-        {
+            const res = await api.put("/values/a001", {
+                value: isChecked ? 1 : 0
+            });
+            console.log(res.data);
+        } catch (err) {
             console.error(err);
         }
     };
@@ -56,24 +45,25 @@ function LightController() {
     return (
         <div>
             <p>Light 1</p>
-            <label onClick={handleLight1}>
-                <input type="checkbox" className="switch" id="switch"/>
+
+            <label className="switch">
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={handleLight1}
+                />
                 <span className="slider"></span>
             </label>
 
-            <br />
+            <br
+            />
 
             <button className="button" onClick={handlePutEverythingOut}>
                 PUT EVERYTHING OUT
             </button>
-            <button className="button" onClick={handleLight1}>
-                Light 1
-            </button>
+
             <button className="button" onClick={handleGet}>
                 GET
-            </button>
-            <button className="button" onClick={handleLight1}>
-                PUT
             </button>
         </div>
     );
