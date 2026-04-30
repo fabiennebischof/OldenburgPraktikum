@@ -16,5 +16,4 @@ export const api = axios.create({
     params: {
         token: TOKEN
     },
-    timeout: 5000
 });

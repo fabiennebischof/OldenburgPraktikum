@@ -1,123 +1,116 @@
-button {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    outline: none;
-    border: 0;
-    vertical-align: middle;
-    text-decoration: none;
-    font-family: inherit;
-    font-size: 15px;
+body {
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #1e293b, #0f172a);
+    color: white;
+    margin: 0;
+    overflow-x: hidden;
 }
 
-button.button {
-    font-weight: 600;
-    color: #382b22;
-    text-transform: uppercase;
-    padding: 1.25em 2em;
-    background: #fff0f0;
-    border: 2px solid #b18597;
-    border-radius: 0.75em;
-    -webkit-transform-style: preserve-3d;
-    transform-style: preserve-3d;
-    -webkit-transition: background 150ms cubic-bezier(0, 0, 0.58, 1), -webkit-transform 150ms cubic-bezier(0, 0, 0.58, 1);
-    transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1), -webkit-transform 150ms cubic-bezier(0, 0, 0.58, 1);
+* {
+    box-sizing: border-box;
 }
 
-button.button::before {
-    position: absolute;
-    content: '';
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #f9c4d2;
-    border-radius: inherit;
-    -webkit-box-shadow: 0 0 0 2px #b18597, 0 0.625em 0 0 #ffe3e2;
-    box-shadow: 0 0 0 2px #b18597, 0 0.625em 0 0 #ffe3e2;
-    -webkit-transform: translate3d(0, 0.75em, -1em);
-    transform: translate3d(0, 0.75em, -1em);
-    transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1), -webkit-transform 150ms cubic-bezier(0, 0, 0.58, 1), -webkit-box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 900px;
+    margin: auto;
 }
 
-button.button:hover {
-    background: #ffe9e9;
-    -webkit-transform: translate(0, 0.25em);
-    transform: translate(0, 0.25em);
+.card {
+    height: 200px;
+    background: #1e293b;
+    padding: 25px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    width: 250px;
 }
 
-button.button:hover::before {
-    -webkit-box-shadow: 0 0 0 2px #b18597, 0 0.5em 0 0 #ffe3e2;
-    box-shadow: 0 0 0 2px #b18597, 0 0.5em 0 0 #ffe3e2;
-    -webkit-transform: translate3d(0, 0.5em, -1em);
-    transform: translate3d(0, 0.5em, -1em);
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
 }
 
-button.button:active {
-    background: #ffe9e9;
-    -webkit-transform: translate(0em, 0.75em);
-    transform: translate(0em, 0.75em);
-}
-
-button.button:active::before {
-    -webkit-box-shadow: 0 0 0 2px #b18597, 0 0 #ffe3e2;
-    box-shadow: 0 0 0 2px #b18597, 0 0 #ffe3e2;
-    -webkit-transform: translate3d(0, 0, -1em);
-    transform: translate3d(0, 0, -1em);
-}
-
-/* The switch - the box around the slider */
 .switch {
-    font-size: 17px;
     position: relative;
     display: inline-block;
-    width: 3.5em;
-    height: 2em;
+    width: 50px;
+    height: 26px;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+    display: none;
 }
 
-/* The slider */
 .slider {
     position: absolute;
     cursor: pointer;
+    background-color: #475569;
+    border-radius: 34px;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgb(182, 182, 182);
-    transition: .4s;
-    border-radius: 10px;
+    transition: 0.3s;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 1.4em;
-    width: 1.4em;
-    border-radius: 8px;
-    left: 0.3em;
-    bottom: 0.3em;
-    transform: rotate(270deg);
-    background-color: rgb(255, 255, 255);
-    transition: .4s;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
 }
 
-.switch input:checked+.slider {
-    background-color: #21cc4c;
+input:checked+.slider {
+    background-color: #22c55e;
 }
 
-.switch input:focus+.slider {
-    box-shadow: 0 0 1px #2196F3;
+input:checked+.slider:before {
+    transform: translateX(24px);
 }
 
-.switch input:checked+.slider:before {
-    transform: translateX(1.5em);
+.card-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    background: #3b82f6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.button:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+}
+
+.button.danger {
+    background: #ef4444;
+}
+
+.button.danger:hover {
+    background: #dc2626;
+}
+
+.header {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: white;
+    letter-spacing: 1px;
 }

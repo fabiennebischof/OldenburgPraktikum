@@ -7,7 +7,7 @@ function LightController() {
     //all off
     const handlePutEverythingOut = async () => {
         try {
-            const res = await api.put("/values/a02k", {
+            const res = await api.put("/values/a02p", {
 
                 value: 0
             });
@@ -27,11 +27,56 @@ function LightController() {
         }
     };
 
-    //light 1 on/off toggle
-    const [checked, setChecked] = useState(false);
-    const handleLight1 = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const [checkedHallway, setCheckedHallway] = useState(false);
+    const [checkedBedroom, setCheckedBedroom] = useState(false);
+    const [checkedLivingRoom, setCheckedLivingRoom] = useState(false);
+    const [checkedA1, setCheckedA1] = useState(false);
+
+    const handleLightHallway = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = e.target.checked;
-        setChecked(isChecked);
+        setCheckedHallway(isChecked);
+
+        try {
+            const res = await api.put("/values/a000", {
+                value: isChecked ? 1 : 0
+            });
+            console.log(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleLightBedroom = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setCheckedBedroom(isChecked);
+
+        try {
+            const res = await api.put("/values/a00j", {
+                value: isChecked ? 1 : 0
+            });
+            console.log(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleLightLivingRoom = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setCheckedLivingRoom(isChecked);
+
+        try {
+            const res = await api.put("/values/a012", {
+                value: isChecked ? 1 : 0
+            });
+            console.log(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleLightA1 = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setCheckedA1(isChecked);
 
         try {
             const res = await api.put("/values/a001", {
@@ -43,30 +88,72 @@ function LightController() {
         }
     };
 
+
     return (
-        <div>
-            <p>Light 1</p>
+        <>
+            <h1 className="header">Smart Home - Praktikanten</h1>
+            <div className="container">
 
-            <label className="switch">
-                <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={handleLight1}
-                />
-                <span className="slider"></span>
-            </label>
 
-            <br
-            />
+                <div className="card">
+                    <p className="title">Licht Flur</p>
+                    <label className="switch">
+                        <input
+                            type="checkbox"
+                            checked={checkedHallway}
+                            onChange={handleLightHallway}
+                        />
+                        <span className="slider"></span>
+                    </label>
+                </div>
 
-            <button className="button" onClick={handlePutEverythingOut}>
-                PUT EVERYTHING OUT
-            </button>
+                <div className="card">
+                    <p className="title">Licht Schlafzimmer</p>
+                    <label className="switch">
+                        <input
+                            type="checkbox"
+                            checked={checkedBedroom}
+                            onChange={handleLightBedroom}
+                        />
+                        <span className="slider"></span>
+                    </label>
+                </div>
 
-            <button className="button" onClick={handleGet}>
-                GET
-            </button>
-        </div>
+                <div className="card">
+                    <p className="title">Licht Wohnzimmer</p>
+                    <label className="switch">
+                        <input
+                            type="checkbox"
+                            checked={checkedLivingRoom}
+                            onChange={handleLightLivingRoom}
+                        />
+                        <span className="slider"></span>
+                    </label>
+                </div>
+
+                <div className="card">
+                    <p className="title">A1</p>
+                    <label className="switch">
+                        <input
+                            type="checkbox"
+                            checked={checkedA1}
+                            onChange={handleLightA1}
+                        />
+                        <span className="slider"></span>
+                    </label>
+                </div>
+
+                <div className="card-buttons">
+                    <button className="button danger" onClick={handlePutEverythingOut}>
+                        PUT EVERYTHING OUT
+                    </button>
+
+                    <button className="button" onClick={handleGet}>
+                        GET
+                    </button>
+                </div>
+            </div>
+        </>
     );
 }
 
