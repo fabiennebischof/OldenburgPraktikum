@@ -7,7 +7,6 @@ function LightController() {
     const [checkedHallway, setCheckedHallway] = useState(false);
     const [checkedBedroom, setCheckedBedroom] = useState(false);
     const [checkedLivingRoom, setCheckedLivingRoom] = useState(false);
-    const [checkedA1, setCheckedA1] = useState(false);
 
     const LIGHTS = {
         hallway: "a001",
@@ -16,7 +15,7 @@ function LightController() {
         livingDimmer: "a01c"
     };
 
-    //all off<
+    //all off
     const handlePutEverythingOut = async () => {
         try {
             const res = await api.put("/values/a02p", {
