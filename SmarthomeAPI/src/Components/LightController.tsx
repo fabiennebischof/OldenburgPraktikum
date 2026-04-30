@@ -4,7 +4,19 @@ import './LightController.css';
 
 function LightController() {
 
-    //all off
+    const [checkedHallway, setCheckedHallway] = useState(false);
+    const [checkedBedroom, setCheckedBedroom] = useState(false);
+    const [checkedLivingRoom, setCheckedLivingRoom] = useState(false);
+    const [checkedA1, setCheckedA1] = useState(false);
+
+    const LIGHTS = {
+        hallway: "a001",
+        bedroom: "a00j",
+        livingRGB: "a013",
+        livingDimmer: "a01c"
+    };
+
+    //all off<
     const handlePutEverythingOut = async () => {
         try {
             const res = await api.put("/values/a02p", {
@@ -27,17 +39,12 @@ function LightController() {
         }
     };
 
-    const [checkedHallway, setCheckedHallway] = useState(false);
-    const [checkedBedroom, setCheckedBedroom] = useState(false);
-    const [checkedLivingRoom, setCheckedLivingRoom] = useState(false);
-    const [checkedA1, setCheckedA1] = useState(false);
-
     const handleLightHallway = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = e.target.checked;
         setCheckedHallway(isChecked);
 
         try {
-            const res = await api.put("/values/a000", {
+            const res = await api.put(`/values/${LIGHTS.hallway}`, {
                 value: isChecked ? 1 : 0
             });
             console.log(res.data);
@@ -51,7 +58,7 @@ function LightController() {
         setCheckedBedroom(isChecked);
 
         try {
-            const res = await api.put("/values/a00j", {
+            const res = await api.put(`/values/${LIGHTS.bedroom}`, {
                 value: isChecked ? 1 : 0
             });
             console.log(res.data);
@@ -65,7 +72,7 @@ function LightController() {
         setCheckedLivingRoom(isChecked);
 
         try {
-            const res = await api.put("/values/a012", {
+            const res = await api.put(`/values/${LIGHTS.livingRGB}`, {
                 value: isChecked ? 1 : 0
             });
             console.log(res.data);
@@ -73,21 +80,6 @@ function LightController() {
             console.error(err);
         }
     };
-
-    const handleLightA1 = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setCheckedA1(isChecked);
-
-        try {
-            const res = await api.put("/values/a001", {
-                value: isChecked ? 1 : 0
-            });
-            console.log(res.data);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
 
     return (
         <>
@@ -126,18 +118,6 @@ function LightController() {
                             type="checkbox"
                             checked={checkedLivingRoom}
                             onChange={handleLightLivingRoom}
-                        />
-                        <span className="slider"></span>
-                    </label>
-                </div>
-
-                <div className="card">
-                    <p className="title">A1</p>
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            checked={checkedA1}
-                            onChange={handleLightA1}
                         />
                         <span className="slider"></span>
                     </label>
