@@ -182,3 +182,31 @@
     border-right-color: var(--border);
   }
 }
+
+.slider-group {
+  display: grid;
+  grid-template-columns: 30px 1fr 50px;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.slider-group {
+  display: flex;
+  align-items: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-buttons {
+  margin-top: 24px;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+  height: 4px;
+}
