@@ -14,11 +14,19 @@ function LightController() {
     const [blue, setBlue] = useState(128);
 
     const LIGHTS = {
-        hallway: "a001",
-        bedroom: "a00j",
-        livingRoom: "a013",
+        //allLighsOn: "a02p",
 
-        livingDimmer: "a01c",
+        hallway: "a001",
+        //hallwayRGB: "a02s",
+
+        bedroom: "a00j",
+        //bedroomRGB: "a031",
+
+        livingRoomRGB: "a013",
+    
+        livingDim1: "a01c",
+        //livingDim2: "a01f",
+
         livingRed: "a015",
         livingGreen: "a016",
         livingBlue: "a017",
@@ -101,7 +109,7 @@ function LightController() {
         setCheckedLivingRoom(isChecked);
 
         try {
-            await api.put(`/values/${LIGHTS.livingRoom}`, {
+            await api.put(`/values/${LIGHTS.livingRoomRGB}`, {
                 value: isChecked ? 1 : 0
             });
         } catch (err) {
@@ -115,7 +123,7 @@ function LightController() {
         setCheckedDim(isChecked);
 
         try {
-            await api.put(`/values/${LIGHTS.livingDimmer}`, {
+            await api.put(`/values/${LIGHTS.livingDim1}`, {
                 value: isChecked ? 1 : 0
             });
         } catch (err) {
