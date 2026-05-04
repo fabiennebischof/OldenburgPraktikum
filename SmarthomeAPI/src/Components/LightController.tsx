@@ -1,516 +1,181 @@
 import { useState } from "react";
 import { api } from "../api";
-import './LightController.css';
+import "./LightController.css";
+
+type Room = "living" | "bedroom" | "hallway";
+
+const LIGHTS = {
+    all: "a02p",
+
+    dim1: "a01c",
+    dim2: "a01f",
+
+    hallway: "a001",
+    bedroom: "a00j",
+
+    rgb: {
+        living: { base: "a013", r: "a015", g: "a016", b: "a017" },
+        bedroom: { base: "a031", r: "a033", g: "a034", b: "a035" },
+        hallway: { base: "a02s", r: "a02u", g: "a02v", b: "a02w" },
+    },
+};
 
 function LightController() {
+    const [lights, setLights] = useState({
+        hallway: false,
+        bedroom: false,
+        dim1: false,
+        dim2: false,
+    });
 
-    const [checkedHallway, setCheckedHallway] = useState(false);
-    const [checkedHallwayRGB, setCheckedHallwayRGB] = useState(false);
-    const [checkedBedroom, setCheckedBedroom] = useState(false);
-    const [checkedBedroomRGB, setCheckedBedroomRGB] = useState(false);
-    //const [checkedLivingRoom, setCheckedLivingRoom] = useState(false);
-    const [checkedLivingroomRGB, setCheckedLivingRoomRGB] = useState(false);
-    const [checkedDim1, setCheckedDim1] = useState(false);
-    const [checkedDim2, setCheckedDim2] = useState(false);
+    const [rgbEnabled, setRgbEnabled] = useState<Record<Room, boolean>>({
+        living: false,
+        bedroom: false,
+        hallway: false,
+    });
 
-    const [red, setRed] = useState(128);
-    const [green, setGreen] = useState(128);
-    const [blue, setBlue] = useState(128);
+    const [rgb, setRgb] = useState<Record<Room, { r: number; g: number; b: number }>>({
+        living: { r: 128, g: 128, b: 128 },
+        bedroom: { r: 128, g: 128, b: 128 },
+        hallway: { r: 128, g: 128, b: 128 },
+    });
 
-    const LIGHTS = {
-        allLighsOnOff: "a02p",
+    const toggle = async (key: keyof typeof lights, apiKey: string, value: boolean) => {
+        setLights(prev => ({ ...prev, [key]: value }));
 
-        Dim1: "a01c",
-        Dim2: "a01f",
-
-        hallway: "a001",
-        hallwayRGB: "a02s",
-
-        hallwayRed: "a02u",
-        hallwayGreen: "a02v",
-        hallwayBlue: "a02w",
-        //hallwayWhite: "a02x",
-        //hallwayBrightness: "a02t",
-
-        bedroom: "a00j",
-        bedroomRGB: "a031",
-
-        bedroomRed: "a033",
-        bedroomGreen: "a034",
-        bedroomBlue: "a035",
-        //bedroomWhite: "a036",
-        //bedroomBrightness: "a032",
-
-        livingRoomRGB: "a013",
-
-        livingRed: "a015",
-        livingGreen: "a016",
-        livingBlue: "a017",
-        //livingWhite: "a018",
-        //livingBrightness: "a014",
+        try {
+            await api.put(`/values/${apiKey}`, { value: value ? 1 : 0 });
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    const handleLivingroomRGBChange = async (r: number, g: number, b: number) => {
-        if (!checkedLivingroomRGB) return;
+    const toggleRGB = async (room: Room, value: boolean) => {
+        setRgbEnabled(prev => ({ ...prev, [room]: value }));
+
+        try {
+            await api.put(`/values/${LIGHTS.rgb[room].base}`, {
+                value: value ? 1 : 0,
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const updateRGB = async (room: Room, key: "r" | "g" | "b", value: number) => {
+        if (!rgbEnabled[room]) return;
+
+        const updated = { ...rgb[room], [key]: value };
+        setRgb(prev => ({ ...prev, [room]: updated }));
 
         try {
             await Promise.all([
-                api.put(`/values/${LIGHTS.livingRed}`, { value: r }),
-                api.put(`/values/${LIGHTS.livingGreen}`, { value: g }),
-                api.put(`/values/${LIGHTS.livingBlue}`, { value: b }),
+                api.put(`/values/${LIGHTS.rgb[room].r}`, { value: updated.r }),
+                api.put(`/values/${LIGHTS.rgb[room].g}`, { value: updated.g }),
+                api.put(`/values/${LIGHTS.rgb[room].b}`, { value: updated.b }),
             ]);
         } catch (err) {
             console.error(err);
         }
     };
 
-    const handleHallwayRGBChange = async (r: number, g: number, b: number) => {
-        if (!checkedBedroomRGB) return;
-
+    const setAll = async (value: 0 | 1) => {
         try {
-            await Promise.all([
-                api.put(`/values/${LIGHTS.hallwayRed}`, { value: r }),
-                api.put(`/values/${LIGHTS.hallwayGreen}`, { value: g }),
-                api.put(`/values/${LIGHTS.hallwayBlue}`, { value: b }),
-            ]);
+            await api.put(`/values/${LIGHTS.all}`, { value });
         } catch (err) {
             console.error(err);
         }
     };
 
-    const handleBedroomRGBChange = async (r: number, g: number, b: number) => {
-        if (!checkedHallwayRGB) return;
+    const renderSwitch = (label: string, checked: boolean, onChange: any) => (
+        <div className="card">
+            <p className="title">{label}</p>
+            <label className="switch">
+                <input type="checkbox" checked={checked} onChange={onChange} />
+                <span className="slider"></span>
+            </label>
+        </div>
+    );
 
-        try {
-            await Promise.all([
-                api.put(`/values/${LIGHTS.bedroomRed}`, { value: r }),
-                api.put(`/values/${LIGHTS.bedroomGreen}`, { value: g }),
-                api.put(`/values/${LIGHTS.bedroomBlue}`, { value: b }),
-            ]);
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    const renderRGB = (room: Room, title: string) => {
+        const { r, g, b } = rgb[room];
 
-    const updateLivingRed = (value: number) => {
-        setRed(value);
-        handleLivingroomRGBChange(value, green, blue);
-    };
+        return (
+            <div className="card">
+                <div className="rgb-container">
+                    <p className="title">{title}</p>
 
-    const updateLivingGreen = (value: number) => {
-        setGreen(value);
-        handleLivingroomRGBChange(red, value, blue);
-    };
+                    <label className="switch">
+                        <input
+                            type="checkbox"
+                            checked={rgbEnabled[room]}
+                            onChange={(e) => toggleRGB(room, e.target.checked)}
+                        />
+                        <span className="slider"></span>
+                    </label>
 
-    const updateLivingBlue = (value: number) => {
-        setBlue(value);
-        handleLivingroomRGBChange(red, green, value);
-    };
+                    {(["r", "g", "b"] as const).map((color) => (
+                        <div key={color}>
+                            <div className="rgb-label">
+                                <span>{color.toUpperCase()}</span>
+                                <span>{rgb[room][color]}</span>
+                            </div>
 
+                            <input
+                                className="rgb-slider"
+                                type="range"
+                                min="0"
+                                max="255"
+                                value={rgb[room][color]}
+                                disabled={!rgbEnabled[room]}
+                                onChange={(e) =>
+                                    updateRGB(room, color, Number(e.target.value))
+                                }
+                            />
+                        </div>
+                    ))}
 
-    const updateBedroomRed = (value: number) => {
-        setRed(value);
-        handleBedroomRGBChange(value, green, blue);
-    };
-
-    const updateBedroomGreen = (value: number) => {
-        setGreen(value);
-        handleBedroomRGBChange(red, value, blue);
-    };
-
-    const updateBedroomBlue = (value: number) => {
-        setBlue(value);
-        handleBedroomRGBChange(red, green, value);
-    };
-
-
-    const updateHallwayRed = (value: number) => {
-        setRed(value);
-        handleHallwayRGBChange(value, green, blue);
-    };
-
-    const updateHallwayGreen = (value: number) => {
-        setGreen(value);
-        handleHallwayRGBChange(red, value, blue);
-    };
-
-    const updateHallwayBlue = (value: number) => {
-        setBlue(value);
-        handleHallwayRGBChange(red, green, value);
-    };
-    
-
-    const handlePutEverythingOut = async () => {
-        try {
-            await api.put("/values/a02p", { value: 0 });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleTurnEverythingOn = async () => {
-        try {
-            await api.put("/values/a02p", { value: 1 });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleGet = async () => {
-        try {
-            const res = await api.get("/uiconfig");
-            console.log(res.data);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleLightHallway = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setCheckedHallway(isChecked);
-
-        try {
-            await api.put(`/values/${LIGHTS.hallway}`, {
-                value: isChecked ? 1 : 0
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleLightHallwayRGB = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setCheckedHallwayRGB(isChecked);
-
-        try {
-            await api.put(`/values/${LIGHTS.hallwayRGB}`, {
-                value: isChecked ? 1 : 0
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleLightBedroom = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setCheckedBedroom(isChecked);
-
-        try {
-            await api.put(`/values/${LIGHTS.bedroom}`, {
-                value: isChecked ? 1 : 0
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleLightBedroomRGB = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setCheckedBedroomRGB(isChecked);
-
-        try {
-            await api.put(`/values/${LIGHTS.bedroomRGB}`, {
-                value: isChecked ? 1 : 0
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleLightLivingRoomRGB = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setCheckedLivingRoomRGB(isChecked);
-
-        try {
-            await api.put(`/values/${LIGHTS.livingRoomRGB}`, {
-                value: isChecked ? 1 : 0
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-
-    const handleDim1 = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setCheckedDim1(isChecked);
-
-        try {
-            await api.put(`/values/${LIGHTS.Dim1}`, {
-                value: isChecked ? 1 : 0
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleDim2 = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setCheckedDim2(isChecked);
-
-        try {
-            await api.put(`/values/${LIGHTS.Dim2}`, {
-                value: isChecked ? 1 : 0
-            });
-        } catch (err) {
-            console.error(err);
-        }
+                    <div
+                        className="color-preview"
+                        style={{ backgroundColor: `rgb(${r}, ${g}, ${b})` }}
+                    />
+                </div>
+            </div>
+        );
     };
 
     return (
         <>
-            <h1 className="header">Smart Home - Praktikanten</h1>
+            <h1 className="header">Smart Home</h1>
 
             <div className="container">
+                {renderSwitch("Flur Licht", lights.hallway, (e: any) =>
+                    toggle("hallway", LIGHTS.hallway, e.target.checked)
+                )}
 
-                <div className="card">
-                    <p className="title">Licht Flur</p>
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            checked={checkedHallway}
-                            onChange={handleLightHallway}
-                        />
-                        <span className="slider"></span>
-                    </label>
-                </div>
+                {renderSwitch("Schlafzimmer Licht", lights.bedroom, (e: any) =>
+                    toggle("bedroom", LIGHTS.bedroom, e.target.checked)
+                )}
 
-                <div className="card">
-                    <p className="title">Licht Schlafzimmer</p>
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            checked={checkedBedroom}
-                            onChange={handleLightBedroom}
-                        />
-                        <span className="slider"></span>
-                    </label>
-                </div>
+                {renderSwitch("Dimmer 1", lights.dim1, (e: any) =>
+                    toggle("dim1", LIGHTS.dim1, e.target.checked)
+                )}
 
-                <div className="card">
-                    <p className="title">Dimmen</p>
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            checked={checkedDim1}
-                            onChange={handleDim1}
-                        />
-                        <span className="slider"></span>
-                    </label>
-                </div>
+                {renderSwitch("Dimmer 2", lights.dim2, (e: any) =>
+                    toggle("dim2", LIGHTS.dim2, e.target.checked)
+                )}
 
-                <div className="card">
-                    <p className="title">Dimmen 2</p>
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            checked={checkedDim2}
-                            onChange={handleDim2}
-                        />
-                        <span className="slider"></span>
-                    </label>
-                </div>
-
-                <div className="card">
-                    <div className="rgb-container">
-
-                        <p className="title">Licht Wohnzimmer</p>
-
-                        <label className="switch">
-                            <input
-                                type="checkbox"
-                                checked={checkedLivingroomRGB}
-                                onChange={handleLightLivingRoomRGB}
-                            />
-                            <span className="slider"></span>
-                        </label>
-
-                        <div className="rgb-label">
-                            <span>Rot</span>
-                            <span>{red}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={red}
-                            disabled={!checkedLivingroomRGB}
-                            onChange={(e) => updateLivingRed(Number(e.target.value))}
-                        />
-
-                        <div className="rgb-label">
-                            <span>Grün</span>
-                            <span>{green}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={green}
-                            disabled={!checkedLivingroomRGB}
-                            onChange={(e) => updateLivingGreen(Number(e.target.value))}
-                        />
-
-                        <div className="rgb-label">
-                            <span>Blau</span>
-                            <span>{blue}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={blue}
-                            disabled={!checkedLivingroomRGB}
-                            onChange={(e) => updateLivingBlue(Number(e.target.value))}
-                        />
-
-                        <div
-                            className="color-preview"
-                            style={{ backgroundColor: `rgb(${red}, ${green}, ${blue})` }}
-                        />
-                    </div>
-                </div>
-
-                <div className="card">
-                    <div className="rgb-container">
-
-                        <p className="title">Licht Schlafzimmer</p>
-
-                        <label className="switch">
-                            <input
-                                type="checkbox"
-                                checked={checkedBedroomRGB}
-                                onChange={handleLightBedroomRGB}
-                            />
-                            <span className="slider"></span>
-                        </label>
-
-                        <div className="rgb-label">
-                            <span>Rot</span>
-                            <span>{red}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={red}
-                            disabled={!checkedBedroomRGB}
-                            onChange={(e) => updateBedroomRed(Number(e.target.value))}
-                        />
-
-                        <div className="rgb-label">
-                            <span>Grün</span>
-                            <span>{green}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={green}
-                            disabled={!checkedBedroomRGB}
-                            onChange={(e) => updateBedroomGreen(Number(e.target.value))}
-                        />
-
-                        <div className="rgb-label">
-                            <span>Blau</span>
-                            <span>{blue}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={blue}
-                            disabled={!checkedBedroomRGB}
-                            onChange={(e) => updateBedroomBlue(Number(e.target.value))}
-                        />
-
-                        <div
-                            className="color-preview"
-                            style={{ backgroundColor: `rgb(${red}, ${green}, ${blue})` }}
-                        />
-                    </div>
-                </div>
-
-                <div className="card">
-                    <div className="rgb-container">
-
-                        <p className="title">Licht Flur</p>
-
-                        <label className="switch">
-                            <input
-                                type="checkbox"
-                                checked={checkedHallwayRGB}
-                                onChange={handleLightHallwayRGB}
-                            />
-                            <span className="slider"></span>
-                        </label>
-
-                        <div className="rgb-label">
-                            <span>Rot</span>
-                            <span>{red}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={red}
-                            disabled={!checkedHallwayRGB}
-                            onChange={(e) => updateHallwayRed(Number(e.target.value))}
-                        />
-
-                        <div className="rgb-label">
-                            <span>Grün</span>
-                            <span>{green}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={green}
-                            disabled={!checkedHallwayRGB}
-                            onChange={(e) => updateHallwayGreen(Number(e.target.value))}
-                        />
-
-                        <div className="rgb-label">
-                            <span>Blau</span>
-                            <span>{blue}</span>
-                        </div>
-                        <input
-                            className="rgb-slider"
-                            type="range"
-                            min="0"
-                            max="255"
-                            value={blue}
-                            disabled={!checkedHallwayRGB}
-                            onChange={(e) => updateHallwayBlue(Number(e.target.value))}
-                        />
-
-                        <div
-                            className="color-preview"
-                            style={{ backgroundColor: `rgb(${red}, ${green}, ${blue})` }}
-                        />
-                    </div>
-                </div>
+                {renderRGB("living", "Wohnzimmer RGB")}
+                {renderRGB("bedroom", "Schlafzimmer RGB")}
+                {renderRGB("hallway", "Flur RGB")}
 
                 <div className="card-buttons">
-                    <button className="button danger" onClick={handlePutEverythingOut}>
-                        PUT EVERYTHING OUT
+                    <button className="button danger" onClick={() => setAll(0)}>
+                        ALLES AUS
                     </button>
 
-                    <button className="button danger" onClick={handleTurnEverythingOn}>
-                        TURN EVERYTHING ON
-                    </button>
-
-                    <button className="button" onClick={handleGet}>
-                        GET
+                    <button className="button danger" onClick={() => setAll(1)}>
+                        ALLES AN
                     </button>
                 </div>
             </div>
