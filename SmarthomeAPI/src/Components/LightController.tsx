@@ -37,7 +37,7 @@ function LightController() {
     };
 
     const handleRGBChange = async (r: number, g: number, b: number) => {
-        if (!checkedLivingRoom) return;
+        if (!checkedLivingRoomRGB) return;
 
         try {
             await Promise.all([
