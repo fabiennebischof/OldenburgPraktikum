@@ -9,7 +9,7 @@ function LightController() {
     const [checkedBedroom, setCheckedBedroom] = useState(false);
     const [checkedBedroomRGB, setCheckedBedroomRGB] = useState(false);
     //const [checkedLivingRoom, setCheckedLivingRoom] = useState(false);
-    const [checkedLivingRoomRGB, setCheckedLivingRoomRGB] = useState(false);
+    const [checkedLivingroomRGB, setCheckedLivingRoomRGB] = useState(false);
     const [checkedDim1, setCheckedDim1] = useState(false);
     const [checkedDim2, setCheckedDim2] = useState(false);
 
@@ -18,26 +18,40 @@ function LightController() {
     const [blue, setBlue] = useState(128);
 
     const LIGHTS = {
-        allLighsOn: "a02p",
+        allLighsOnOff: "a02p",
+
+        Dim1: "a01c",
+        Dim2: "a01f",
 
         hallway: "a001",
         hallwayRGB: "a02s",
 
+        hallwayRed: "a02u",
+        hallwayGreen: "a02v",
+        hallwayBlue: "a02w",
+        //hallwayWhite: "a02x",
+        //hallwayBrightness: "a02t",
+
         bedroom: "a00j",
         bedroomRGB: "a031",
 
+        bedroomRed: "a033",
+        bedroomGreen: "a034",
+        bedroomBlue: "a035",
+        //bedroomWhite: "a036",
+        //bedroomBrightness: "a032",
+
         livingRoomRGB: "a013",
-    
-        livingDim1: "a01c",
-        livingDim2: "a01f",
 
         livingRed: "a015",
         livingGreen: "a016",
         livingBlue: "a017",
+        //livingWhite: "a018",
+        //livingBrightness: "a014",
     };
 
-    const handleRGBChange = async (r: number, g: number, b: number) => {
-        if (!checkedLivingRoomRGB) return;
+    const handleLivingroomRGBChange = async (r: number, g: number, b: number) => {
+        if (!checkedLivingroomRGB) return;
 
         try {
             await Promise.all([
@@ -50,20 +64,81 @@ function LightController() {
         }
     };
 
-    const updateRed = (value: number) => {
+    const handleHallwayRGBChange = async (r: number, g: number, b: number) => {
+        if (!checkedBedroomRGB) return;
+
+        try {
+            await Promise.all([
+                api.put(`/values/${LIGHTS.hallwayRed}`, { value: r }),
+                api.put(`/values/${LIGHTS.hallwayGreen}`, { value: g }),
+                api.put(`/values/${LIGHTS.hallwayBlue}`, { value: b }),
+            ]);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleBedroomRGBChange = async (r: number, g: number, b: number) => {
+        if (!checkedHallwayRGB) return;
+
+        try {
+            await Promise.all([
+                api.put(`/values/${LIGHTS.bedroomRed}`, { value: r }),
+                api.put(`/values/${LIGHTS.bedroomGreen}`, { value: g }),
+                api.put(`/values/${LIGHTS.bedroomBlue}`, { value: b }),
+            ]);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const updateLivingRed = (value: number) => {
         setRed(value);
-        handleRGBChange(value, green, blue);
+        handleLivingroomRGBChange(value, green, blue);
     };
 
-    const updateGreen = (value: number) => {
+    const updateLivingGreen = (value: number) => {
         setGreen(value);
-        handleRGBChange(red, value, blue);
+        handleLivingroomRGBChange(red, value, blue);
     };
 
-    const updateBlue = (value: number) => {
+    const updateLivingBlue = (value: number) => {
         setBlue(value);
-        handleRGBChange(red, green, value);
+        handleLivingroomRGBChange(red, green, value);
     };
+
+
+    const updateBedroomRed = (value: number) => {
+        setRed(value);
+        handleBedroomRGBChange(value, green, blue);
+    };
+
+    const updateBedroomGreen = (value: number) => {
+        setGreen(value);
+        handleBedroomRGBChange(red, value, blue);
+    };
+
+    const updateBedroomBlue = (value: number) => {
+        setBlue(value);
+        handleBedroomRGBChange(red, green, value);
+    };
+
+
+    const updateHallwayRed = (value: number) => {
+        setRed(value);
+        handleHallwayRGBChange(value, green, blue);
+    };
+
+    const updateHallwayGreen = (value: number) => {
+        setGreen(value);
+        handleHallwayRGBChange(red, value, blue);
+    };
+
+    const updateHallwayBlue = (value: number) => {
+        setBlue(value);
+        handleHallwayRGBChange(red, green, value);
+    };
+    
 
     const handlePutEverythingOut = async () => {
         try {
@@ -161,7 +236,7 @@ function LightController() {
         setCheckedDim1(isChecked);
 
         try {
-            await api.put(`/values/${LIGHTS.livingDim1}`, {
+            await api.put(`/values/${LIGHTS.Dim1}`, {
                 value: isChecked ? 1 : 0
             });
         } catch (err) {
@@ -174,7 +249,7 @@ function LightController() {
         setCheckedDim2(isChecked);
 
         try {
-            await api.put(`/values/${LIGHTS.livingDim2}`, {
+            await api.put(`/values/${LIGHTS.Dim2}`, {
                 value: isChecked ? 1 : 0
             });
         } catch (err) {
@@ -244,7 +319,7 @@ function LightController() {
                         <label className="switch">
                             <input
                                 type="checkbox"
-                                checked={checkedLivingRoomRGB}
+                                checked={checkedLivingroomRGB}
                                 onChange={handleLightLivingRoomRGB}
                             />
                             <span className="slider"></span>
@@ -260,8 +335,8 @@ function LightController() {
                             min="0"
                             max="255"
                             value={red}
-                            disabled={!checkedLivingRoomRGB}
-                            onChange={(e) => updateRed(Number(e.target.value))}
+                            disabled={!checkedLivingroomRGB}
+                            onChange={(e) => updateLivingRed(Number(e.target.value))}
                         />
 
                         <div className="rgb-label">
@@ -274,8 +349,8 @@ function LightController() {
                             min="0"
                             max="255"
                             value={green}
-                            disabled={!checkedLivingRoomRGB}
-                            onChange={(e) => updateGreen(Number(e.target.value))}
+                            disabled={!checkedLivingroomRGB}
+                            onChange={(e) => updateLivingGreen(Number(e.target.value))}
                         />
 
                         <div className="rgb-label">
@@ -288,8 +363,8 @@ function LightController() {
                             min="0"
                             max="255"
                             value={blue}
-                            disabled={!checkedLivingRoomRGB}
-                            onChange={(e) => updateBlue(Number(e.target.value))}
+                            disabled={!checkedLivingroomRGB}
+                            onChange={(e) => updateLivingBlue(Number(e.target.value))}
                         />
 
                         <div
@@ -324,7 +399,7 @@ function LightController() {
                             max="255"
                             value={red}
                             disabled={!checkedBedroomRGB}
-                            onChange={(e) => updateRed(Number(e.target.value))}
+                            onChange={(e) => updateBedroomRed(Number(e.target.value))}
                         />
 
                         <div className="rgb-label">
@@ -338,7 +413,7 @@ function LightController() {
                             max="255"
                             value={green}
                             disabled={!checkedBedroomRGB}
-                            onChange={(e) => updateGreen(Number(e.target.value))}
+                            onChange={(e) => updateBedroomGreen(Number(e.target.value))}
                         />
 
                         <div className="rgb-label">
@@ -352,7 +427,7 @@ function LightController() {
                             max="255"
                             value={blue}
                             disabled={!checkedBedroomRGB}
-                            onChange={(e) => updateBlue(Number(e.target.value))}
+                            onChange={(e) => updateBedroomBlue(Number(e.target.value))}
                         />
 
                         <div
@@ -387,7 +462,7 @@ function LightController() {
                             max="255"
                             value={red}
                             disabled={!checkedHallwayRGB}
-                            onChange={(e) => updateRed(Number(e.target.value))}
+                            onChange={(e) => updateHallwayRed(Number(e.target.value))}
                         />
 
                         <div className="rgb-label">
@@ -401,7 +476,7 @@ function LightController() {
                             max="255"
                             value={green}
                             disabled={!checkedHallwayRGB}
-                            onChange={(e) => updateGreen(Number(e.target.value))}
+                            onChange={(e) => updateHallwayGreen(Number(e.target.value))}
                         />
 
                         <div className="rgb-label">
@@ -415,7 +490,7 @@ function LightController() {
                             max="255"
                             value={blue}
                             disabled={!checkedHallwayRGB}
-                            onChange={(e) => updateBlue(Number(e.target.value))}
+                            onChange={(e) => updateHallwayBlue(Number(e.target.value))}
                         />
 
                         <div
