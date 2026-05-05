@@ -14,9 +14,9 @@ const LIGHTS = {
     bedroom: "a00j",
 
     rgb: {
-        living: { base: "a013", r: "a015", g: "a016", b: "a017" },
-        bedroom: { base: "a031", r: "a033", g: "a034", b: "a035" },
-        hallway: { base: "a02s", r: "a02u", g: "a02v", b: "a02w" },
+        living: { base: "a013", r: "a015", g: "a016", b: "a017", brightness: "a014"},
+        bedroom: { base: "a031", r: "a033", g: "a034", b: "a035", brightness: "a032"},
+        hallway: { base: "a02s", r: "a02u", g: "a02v", b: "a02w", brightness: "a02t" },
     },
 };
 
@@ -35,9 +35,15 @@ function LightController() {
     });
 
     const [rgb, setRgb] = useState<Record<Room, { r: number; g: number; b: number }>>({
-        living: { r: 128, g: 128, b: 128 },
-        bedroom: { r: 128, g: 128, b: 128 },
-        hallway: { r: 128, g: 128, b: 128 },
+        living: { r: 255, g: 0, b: 0 },
+        bedroom: { r: 0, g: 255, b: 0 },
+        hallway: { r: 0, g: 0, b: 255 },
+    });
+
+    const [brightness, setBrightness] = useState<Record<Room, number>>({
+        living: 255,
+        bedroom: 255,
+        hallway: 255,
     });
 
     const toggle = async (key: keyof typeof lights, apiKey: string, value: boolean) => {
@@ -79,6 +85,20 @@ function LightController() {
         }
     };
 
+    const updateBrightness = async (room: Room, value: number) => {
+        if (!rgbEnabled[room]) return;
+
+        setBrightness(prev => ({ ...prev, [room]: value }));
+
+        try {
+            await api.put(`/values/${LIGHTS.rgb[room].brightness}`, {
+                value,
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const setAll = async (value: 0 | 1) => {
         try {
             await api.put(`/values/${LIGHTS.all}`, { value });
@@ -98,6 +118,7 @@ function LightController() {
     );
 
     const renderRGB = (room: Room, title: string) => {
+
         const { r, g, b } = rgb[room];
 
         return (
@@ -135,6 +156,25 @@ function LightController() {
                         </div>
                     ))}
 
+                    <div>
+                        <div className="rgb-label">
+                            <span>Brightness</span>
+                            <span>{brightness[room]}</span>
+                        </div>
+
+                        <input
+                            className="rgb-slider"
+                            type="range"
+                            min="0"
+                            max="255"
+                            value={brightness[room]}
+                            disabled={!rgbEnabled[room]}
+                            onChange={(e) =>
+                                updateBrightness(room, Number(e.target.value))
+                            }
+                        />
+                    </div>
+
                     <div
                         className="color-preview"
                         style={{ backgroundColor: `rgb(${r}, ${g}, ${b})` }}
@@ -168,6 +208,8 @@ function LightController() {
                 {renderRGB("living", "Wohnzimmer RGB")}
                 {renderRGB("bedroom", "Schlafzimmer RGB")}
                 {renderRGB("hallway", "Flur RGB")}
+
+                
 
                 <div className="card-buttons">
                     <button className="button danger" onClick={() => setAll(0)}>
