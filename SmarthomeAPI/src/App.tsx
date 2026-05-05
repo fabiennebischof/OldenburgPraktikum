@@ -1,5 +1,5 @@
 import './App.css'
-import LightController from "./Components/LightController";
+import LightController from "./Components/LightController/LightController";
 
 function App() {
 
