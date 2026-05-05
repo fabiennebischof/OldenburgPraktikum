@@ -1,4 +1,5 @@
 import "../LightController/LightController.css";
+import { Palette, Sofa, BedDouble, DoorOpen } from "lucide-react";
 
 type Room = "living" | "bedroom" | "hallway";
 
@@ -25,10 +26,20 @@ export default function RgbLight({
     updateBrightness
 }: RgbLightProps) {
 
+    const getIcon = () => {
+        if (room === "living") return <Sofa className="icon" />;
+        if (room === "bedroom") return <BedDouble className="icon" />;
+        if (room === "hallway") return <DoorOpen className="icon" />;
+        return <Palette className="icon" />;
+    };
+
     return (
         <div className="card">
             <div className="rgb-container">
-                <p className="title">{title}</p>
+                <div className="card-header">
+                    {getIcon()}
+                    <span className="title">{title}</span>
+                </div>
 
                 <label className="switch">
                     <input

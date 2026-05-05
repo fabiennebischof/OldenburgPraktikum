@@ -1,4 +1,5 @@
 import "../LightController/LightController.css";
+import { Lightbulb } from "lucide-react";
 
 type NormalLightProps = {
     label: string;
@@ -9,7 +10,11 @@ type NormalLightProps = {
 export default function NormalLight({ label, checked, onChange }: NormalLightProps) {
     return (
         <div className="card">
-            <p className="title">{label}</p>
+            <div className="card-header">
+                <Lightbulb className="icon" />
+                <span className="title">{label}</span>
+            </div>
+
             <label className="switch">
                 <input
                     type="checkbox"

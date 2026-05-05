@@ -1,4 +1,5 @@
 import "../LightController/LightController.css";
+import { SlidersHorizontal } from "lucide-react";
 
 
 type DimmerProps = {
@@ -10,7 +11,11 @@ type DimmerProps = {
 export default function Dimmer({ label, checked, onChange }: DimmerProps) {
     return (
         <div className="card">
-            <p className="title">{label}</p>
+            <div className="card-header">
+                <SlidersHorizontal className="icon" />
+                <span className="title">{label}</span>
+            </div>
+
             <label className="switch">
                 <input
                     type="checkbox"
