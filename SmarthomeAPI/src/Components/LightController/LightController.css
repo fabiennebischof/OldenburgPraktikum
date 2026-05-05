@@ -1,54 +1,86 @@
-html,
-body {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
+:root {
+    --bg-main: #0f172a;
+    --bg-secondary: #1e293b;
+    --card: rgba(30, 41, 59, 0.7);
+    --border: #334155;
+
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --success: #22c55e;
+    --danger: #ef4444;
+
+    --text-main: #e2e8f0;
+    --text-dim: #94a3b8;
+
+    --glow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
 
-body {
-    min-height: 100vh;
-    background: radial-gradient(circle at top, #1e293b, #0f172a);
-    background-attachment: fixed;
-
-}
-
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: system-ui, sans-serif;
+    background: radial-gradient(circle at top, #1e293b, #020617);
+    background-attachment: fixed;
+    color: var(--text-main);
+}
 
 .container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 20px;
-    max-width: 900px;
-    margin: 0 auto;
+    max-width: 1100px;
+    margin: auto;
     padding: 40px 20px;
+}
+
+.header {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: white;
 }
 
 .card {
     min-height: 200px;
-    height: auto;
-    background: #1e293b;
-    padding: 25px 40px;
+    padding: 25px;
     border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+
+    background: var(--card);
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.05);
+
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    width: 250px;
+
+    transition: all 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.5),
+        var(--glow);
 }
 
 .title {
     font-size: 18px;
-    font-weight: bold;
-    color: white;
+    font-weight: 600;
 }
 
 .switch {
     position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 26px;
+    width: 52px;
+    height: 28px;
 }
 
 .switch input {
@@ -57,93 +89,107 @@ body {
 
 .slider {
     position: absolute;
+    inset: 0;
+    background: #475569;
+    border-radius: 50px;
     cursor: pointer;
-    background-color: #475569;
-    border-radius: 34px;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     transition: 0.3s;
 }
 
-.slider:before {
-    position: absolute;
+.slider::before {
     content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
+    position: absolute;
+    height: 22px;
+    width: 22px;
     bottom: 3px;
-    background-color: white;
+    left: 3px;
+    background: white;
     border-radius: 50%;
     transition: 0.3s;
 }
 
 input:checked+.slider {
-    background-color: #22c55e;
+    background: var(--success);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
 }
 
-input:checked+.slider:before {
+input:checked+.slider::before {
     transform: translateX(24px);
 }
 
 .card-buttons {
     display: flex;
-    gap: 15px;
+    gap: 10px;
+    margin-top: 15px;
 }
 
 .button {
-    padding: 12px 20px;
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
     border: none;
-    border-radius: 12px;
-    background: #3b82f6;
+
+    background: var(--primary);
     color: white;
-    font-weight: bold;
+    font-weight: 600;
+
     cursor: pointer;
-    transition: 0.2s;
+
+    transition: all 0.2s ease;
 }
 
 .button:hover {
-    background: #2563eb;
-    transform: scale(1.05);
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--glow);
+}
+
+.button:active {
+    transform: scale(0.97);
 }
 
 .button.danger {
-    background: #ef4444;
+    background: var(--danger);
 }
 
 .button.danger:hover {
     background: #dc2626;
-}
-
-.header {
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    color: white;
-    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
 }
 
 .rgb-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 100%;
+    margin-top: 10px;
 }
 
 .rgb-slider {
     width: 100%;
+    accent-color: var(--primary);
 }
 
 .rgb-label {
     display: flex;
     justify-content: space-between;
-    font-size: 14px;
+    font-size: 13px;
+    color: var(--text-dim);
 }
 
 .color-preview {
     height: 40px;
     border-radius: 10px;
-    margin-top: 10px;
-    border: 2px solid #334155;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+}
+
+.color-preview:hover {
+    transform: scale(1.02);
+}
+
+@media (hover: none) {
+    .card:hover {
+        transform: none;
+        box-shadow: none;
+    }
 }

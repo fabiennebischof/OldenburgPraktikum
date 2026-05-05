@@ -77,6 +77,26 @@ export function useSmartHome() {
     };
 
     const setAll = async (value: 0 | 1) => {
+        const on = value === 1;
+
+        setLights(prev =>
+            Object.fromEntries(
+                Object.keys(prev).map(key => [key, on])
+            ) as typeof prev
+        );
+
+        setRgbEnabled(prev =>
+            Object.fromEntries(
+                Object.keys(prev).map(key => [key, on])
+            ) as typeof prev
+        );
+
+        setBrightness(prev =>
+            Object.fromEntries(
+                Object.keys(prev).map(key => [key, on ? 255 : 0])
+            ) as typeof prev
+        );
+
         try {
             await api.put(`/values/${LIGHTS.all}`, { value });
         } catch (err) {
