@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "../api";
+import { api } from "../Api/api";
 import { LIGHTS } from "../constants/lights";
 import type { Room } from "../constants/lights";
 
